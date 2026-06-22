@@ -1,22 +1,17 @@
--- AUTO QUEST ŒUF v45 - Rayfield UI
-print("=== AUTO QUEST ŒUF v45 - Rayfield UI ===")
+-- AUTO QUEST ŒUF v46 - Rayfield UI
+print("=== AUTO QUEST ŒUF v46 - Rayfield UI ===")
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local player = Players.LocalPlayer
 
--- Chargement Rayfield
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
     Name = "Auto Quest Œuf | by Starfall",
     LoadingTitle = "Connecting to GitHub...",
     LoadingSubtitle = "by Starfall",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "AutoQuestOeuf",
-        FileName = "Config"
-    },
+    ConfigurationSaving = { Enabled = true, FolderName = "AutoQuestOeuf", FileName = "Config" },
     KeySystem = false
 })
 
@@ -52,11 +47,9 @@ Tab:CreateButton({
         if food then
             pcall(function()
                 local ctm = require(ReplicatedStorage:FindFirstChild("ClientToolManager", true))
-                if ctm then
-                    ctm.backpack_equip(food)
-                    Rayfield:Notify("Succès", "Sandwich équipé !", 4483362458)
-                end
+                if ctm then ctm.backpack_equip(food) end
             end)
+            Rayfield:Notify("Succès", "Sandwich équipé !", 4483362458)
         else
             Rayfield:Notify("Erreur", "Aucun sandwich trouvé", 4483362458)
         end
@@ -66,34 +59,39 @@ Tab:CreateButton({
 Tab:CreateButton({
     Name = "Force Feed (Manual)",
     Callback = function()
-        Rayfield:Notify("Info", "Clique manuellement sur le bouton FEED maintenant", 4483362458)
+        Rayfield:Notify("Info", "Clique maintenant sur FEED", 4483362458)
     end,
 })
 
 Tab:CreateButton({
-    Name = "Sortir de l'Eau",
+    Name = "Sortir de l'Eau (Fix)",
     Callback = function()
         pcall(function()
-            -- Méthode 1 : Reset character state
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                task.wait(0.2)
-                player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
-            end
-            
-            -- Méthode 2 : Pour pets dans l'eau
-            local pet = nil
-            for _, obj in ipairs(game.Workspace:GetDescendants()) do
-                if obj:FindFirstChild("PetUnique") then
-                    pet = obj
-                    break
+            local char = player.Character
+            if char and char:FindFirstChild("Humanoid") then
+                local hum = char.Humanoid
+                
+                -- Meilleure méthode pour sortir de l'eau
+                hum:ChangeState(Enum.HumanoidStateType.Jumping)
+                task.wait(0.15)
+                hum:ChangeState(Enum.HumanoidStateType.Freefall)
+                task.wait(0.3)
+                hum:ChangeState(Enum.HumanoidStateType.Landed)
+                
+                -- Reset velocity
+                if char:FindFirstChild("HumanoidRootPart") then
+                    char.HumanoidRootPart.Velocity = Vector3.new(0, 50, 0) -- Petit boost vers le haut
                 end
             end
-            if pet and pet:FindFirstChild("Humanoid") then
-                pet.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+
+            -- Pour le pet aussi
+            for _, obj in ipairs(game.Workspace:GetDescendants()) do
+                if obj:FindFirstChild("Humanoid") and (obj.Name == "Char" or obj:FindFirstChild("PetUnique")) then
+                    obj.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
             end
         end)
-        Rayfield:Notify("Sortir de l'Eau", "Tentative de sortie de l'eau effectuée", 4483362458)
+        Rayfield:Notify("Sortir de l'Eau", "Tentative améliorée effectuée", 4483362458)
     end,
 })
 
@@ -109,7 +107,7 @@ end
 if AilmentsClient then
     AilmentsClient.get_ailment_created_signal():Connect(function(ailment)
         if ailment and ailment.id == "hungry" then
-            Rayfield:Notify("Quête Hungry", "Sandwich en cours d'équipement...", 4483362458)
+            Rayfield:Notify("Quête Hungry", "Équipement du sandwich...", 4483362458)
             local food = findFood()
             if food then
                 pcall(function()
@@ -121,5 +119,5 @@ if AilmentsClient then
     end)
 end
 
-Rayfield:Notify("Panel Chargé", "Auto Quest Œuf v45 prêt !", 4483362458)
-print("v45 chargé avec succès")
+Rayfield:Notify("Panel Chargé", "v46 prêt !", 4483362458)
+print("v46 chargé")
