@@ -46,7 +46,7 @@ end
 
 -- Boutons principaux
 Tab:CreateButton({
-    Name = "Equipe Sandwich (Hungry)",
+    Name = "Equipe Sandwich",
     Callback = function()
         local food = findItem("hungry")
         if food then
@@ -62,7 +62,7 @@ Tab:CreateButton({
 })
 
 Tab:CreateButton({
-    Name = "Equipe Boisson (Thirsty)",
+    Name = "Equipe Water",
     Callback = function()
         local drink = findItem("thirsty")
         if drink then
