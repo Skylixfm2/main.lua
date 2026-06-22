@@ -1,5 +1,5 @@
--- AUTO QUEST ŒUF v48 - Rayfield UI (Version Propre)
-print("=== AUTO QUEST ŒUF v48 - Rayfield UI ===")
+-- AUTO QUEST ŒUF v49 - Rayfield UI (Propre)
+print("=== AUTO QUEST ŒUF v49 - Rayfield UI ===")
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -77,7 +77,27 @@ Tab:CreateButton({
     end,
 })
 
--- Détection Auto Hungry / Thirsty
+Tab:CreateButton({
+    Name = "TP Buy Water",
+    Callback = function()
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(3020.41, 6960.26, -3002.70)
+            Rayfield:Notify("Téléportation", "TP Buy Water effectué", 4483362458)
+        end
+    end,
+})
+
+Tab:CreateButton({
+    Name = "TP Buy Food",
+    Callback = function()
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(3020.41, 6960.26, -3042.36)
+            Rayfield:Notify("Téléportation", "TP Buy Food effectué", 4483362458)
+        end
+    end,
+})
+
+-- Détection Auto
 local AilmentsClient
 for _, v in ipairs(game:GetDescendants()) do
     if v:IsA("ModuleScript") and v.Name == "AilmentsClient" then
@@ -112,5 +132,5 @@ if AilmentsClient then
     end)
 end
 
-Rayfield:Notify("Panel Chargé", "Auto Quest Œuf v48 prêt !", 4483362458)
-print("v48 chargé avec succès")
+Rayfield:Notify("Panel Chargé", "Auto Quest Œuf v49 prêt !", 4483362458)
+print("v49 chargé avec succès")
