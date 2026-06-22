@@ -1,5 +1,5 @@
--- AUTO QUEST ŒUF v49 - Rayfield UI (Propre)
-print("=== AUTO QUEST ŒUF v49 - Rayfield UI ===")
+-- AUTO QUEST ŒUF v50 - Rayfield UI + Speed Hack
+print("=== AUTO QUEST ŒUF v50 - Rayfield UI + Speed Hack ===")
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -44,9 +44,59 @@ local function findItem(ailmentType)
     return item
 end
 
--- Boutons principaux
+-- === SPEED HACK ===
+local speedValue = 100
+local speedConnection = nil
+
+local SpeedToggle = Tab:CreateToggle({
+    Name = "Speed Hack",
+    CurrentValue = false,
+    Flag = "SpeedHack",
+    Callback = function(Value)
+        if Value then
+            if player.Character and player.Character:FindFirstChild("Humanoid") then
+                player.Character.Humanoid.WalkSpeed = speedValue
+            end
+            speedConnection = game:GetService("RunService").Heartbeat:Connect(function()
+                if player.Character and player.Character:FindFirstChild("Humanoid") then
+                    player.Character.Humanoid.WalkSpeed = speedValue
+                end
+            end)
+            Rayfield:Notify("Speed Hack", "Activé ("..speedValue..")", 4483362458)
+        else
+            if speedConnection then
+                speedConnection:Disconnect()
+                speedConnection = nil
+            end
+            if player.Character and player.Character:FindFirstChild("Humanoid") then
+                player.Character.Humanoid.WalkSpeed = 16
+            end
+            Rayfield:Notify("Speed Hack", "Désactivé", 4483362458)
+        end
+    end,
+})
+
+Tab:CreateInput({
+    Name = "Vitesse (WalkSpeed)",
+    PlaceholderText = "Ex: 100",
+    CurrentValue = "100",
+    Flag = "SpeedValue",
+    Callback = function(Text)
+        local num = tonumber(Text)
+        if num then
+            speedValue = num
+            Rayfield:Notify("Vitesse mise à jour", "Nouvelle vitesse : " .. num, 4483362458)
+            -- Si le speed hack est activé, on applique immédiatement
+            if SpeedToggle.CurrentValue and player.Character and player.Character:FindFirstChild("Humanoid") then
+                player.Character.Humanoid.WalkSpeed = speedValue
+            end
+        end
+    end,
+})
+
+-- === Boutons Nourriture ===
 Tab:CreateButton({
-    Name = "Equipe Sandwich",
+    Name = "Équiper Sandwich (Hungry)",
     Callback = function()
         local food = findItem("hungry")
         if food then
@@ -62,7 +112,7 @@ Tab:CreateButton({
 })
 
 Tab:CreateButton({
-    Name = "Equipe Water",
+    Name = "Équiper Boisson (Thirsty)",
     Callback = function()
         local drink = findItem("thirsty")
         if drink then
@@ -132,5 +182,5 @@ if AilmentsClient then
     end)
 end
 
-Rayfield:Notify("Panel Chargé", "Auto Quest Œuf v49 prêt !", 4483362458)
-print("v49 chargé avec succès")
+Rayfield:Notify("Panel Chargé", "v50 + Speed Hack prêt !", 4483362458)
+print("v50 chargé avec succès")
