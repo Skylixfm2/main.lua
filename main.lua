@@ -1,4 +1,4 @@
-print("=== AUTO QUEST ŒUF v51.6 - Rayfield UI + Auto Shower Fix ===")
+print("=== AUTO QUEST ŒUF v51.8 - Rayfield UI + Auto Shower Stable ===")
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -11,7 +11,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
     Name = "Cheat Adopt Me | by SkylixFM",
     LoadingTitle = "Auto Quest Œuf",
-    LoadingSubtitle = "v51.6 - by SkylixFM",
+    LoadingSubtitle = "v51.8 - by SkylixFM",
     ConfigurationSaving = { Enabled = true, FolderName = "AutoQuestOeuf", FileName = "Config" },
     KeySystem = false
 })
@@ -74,20 +74,16 @@ Tab:CreateToggle({
     end,
 })
 
--- === AUTO SHOWER PET (Version Stable) ===
+-- === AUTO SHOWER PET (Version Ultra Stable) ===
 Tab:CreateButton({
     Name = "🛁 Auto Shower Pet (Ta Maison)",
     Callback = function()
-        local success, EquippedPets = pcall(function()
-            return require(ReplicatedStorage:WaitForChild("Fsys")).load("EquippedPets")
+        local EquippedPets = nil
+        pcall(function()
+            EquippedPets = require(ReplicatedStorage:WaitForChild("Fsys")).load("EquippedPets")
         end)
-        
-        if not success or not EquippedPets then
-            Rayfield:Notify("Erreur", "Impossible de charger les pets", 4483362458)
-            return
-        end
 
-        local pet = EquippedPets.choose_wrapper()
+        local pet = EquippedPets and EquippedPets.choose_wrapper()
         if not pet or not pet.char then
             Rayfield:Notify("Erreur", "Équipe un pet d'abord !", 4483362458)
             return
@@ -99,58 +95,38 @@ Tab:CreateButton({
             return
         end
 
-        -- Recherche de la douche dans TA maison uniquement
-        local myHouse = nil
+        -- Recherche propre de la douche dans ta maison
         local shower = nil
-
-        -- Cherche l'intérieur de ta maison
-        for _, interior in ipairs(Workspace:WaitForChild("HouseInteriors", 3):GetChildren()) do
-            if interior:FindFirstChild("Plots") or interior.Name:find("housing") then
-                myHouse = interior
-                break
-            end
-        end
-
-        if myHouse then
-            for _, obj in ipairs(myHouse:GetDescendants()) do
-                local n = obj.Name:lower()
-                if (n:find("shower") or n:find("modernshower")) and 
-                   (obj:FindFirstChild("Center") or obj:FindFirstChild("PrimaryPart") or obj:FindFirstChild("Smoke")) then
-                    shower = obj
-                    break
-                end
-            end
-        end
-
-        -- Backup : recherche générale
-        if not shower then
-            for _, obj in ipairs(Workspace:GetDescendants()) do
-                local n = obj.Name:lower()
-                if (n:find("shower") or n:find("modernshower")) and obj.Parent and obj.Parent.Name:find("House") then
-                    if obj:FindFirstChild("Center") or obj:FindFirstChild("PrimaryPart") then
+        local houseInteriors = Workspace:FindFirstChild("HouseInteriors")
+        
+        if houseInteriors then
+            for _, house in ipairs(houseInteriors:GetChildren()) do
+                for _, obj in ipairs(house:GetDescendants()) do
+                    local name = obj.Name:lower()
+                    if (name:find("shower") or name:find("modernshower") or name:find("stylishshower")) and
+                       (obj:FindFirstChild("Center") or obj:FindFirstChild("PrimaryPart")) then
                         shower = obj
                         break
                     end
                 end
+                if shower then break end
             end
         end
 
         if not shower then
-            Rayfield:Notify("Erreur", "Ta douche n'a pas été trouvée", 4483362458)
+            Rayfield:Notify("Erreur", "Douche non trouvée dans ta maison", 4483362458)
             return
         end
 
-        local showerPart = shower.PrimaryPart or shower.Center or shower:FindFirstChildWhichIsA("BasePart")
+        local showerPart = shower.PrimaryPart or shower.Center
         if showerPart then
-            petRoot.CFrame = showerPart.CFrame * CFrame.new(0, 3, -3.5) -- Devant la douche
-            Rayfield:Notify("Auto Shower", "Pet téléporté devant ta douche !", 4483362458)
-            task.wait(1)
-            Rayfield:Notify("Auto Shower", "Le pet devrait se laver maintenant", 4483362458)
+            petRoot.CFrame = showerPart.CFrame * CFrame.new(0, 3.5, -4) -- Devant la douche
+            Rayfield:Notify("Auto Shower", "Pet téléporté devant ta douche ✅", 4483362458)
         end
     end,
 })
 
--- === TELEPORTS & FOOD (inchangés) ===
+-- === TELEPORTS ===
 local tps = {
     ["Buy Water"] = CFrame.new(3020.41, 6960.26, -3002.70),
     ["Buy Food"]  = CFrame.new(3020.41, 6960.26, -3042.36),
@@ -166,23 +142,39 @@ for name, cf in pairs(tps) do
     end})
 end
 
+-- === FOOD ===
 Tab:CreateButton({ Name = "Équiper Sandwich (Hungry)", Callback = function()
     local food = findItem("hungry")
-    if food then pcall(function() local ctm = require(ReplicatedStorage:FindFirstChild("ClientToolManager", true)) if ctm then ctm.backpack_equip(food) end end) Rayfield:Notify("Succès", "Sandwich équipé", 4483362458)
-    else Rayfield:Notify("Erreur", "Aucun sandwich", 4483362458) end
+    if food then
+        pcall(function()
+            local ctm = require(ReplicatedStorage:FindFirstChild("ClientToolManager", true))
+            if ctm then ctm.backpack_equip(food) end
+        end)
+        Rayfield:Notify("Succès", "Sandwich équipé", 4483362458)
+    else
+        Rayfield:Notify("Erreur", "Aucun sandwich", 4483362458)
+    end
 end})
 
 Tab:CreateButton({ Name = "Équiper Boisson (Thirsty)", Callback = function()
     local drink = findItem("thirsty")
-    if drink then pcall(function() local ctm = require(ReplicatedStorage:FindFirstChild("ClientToolManager", true)) if ctm then ctm.backpack_equip(drink) end end) Rayfield:Notify("Succès", "Boisson équipée", 4483362458)
-    else Rayfield:Notify("Erreur", "Aucune boisson", 4483362458) end
+    if drink then
+        pcall(function()
+            local ctm = require(ReplicatedStorage:FindFirstChild("ClientToolManager", true))
+            if ctm then ctm.backpack_equip(drink) end
+        end)
+        Rayfield:Notify("Succès", "Boisson équipée", 4483362458)
+    else
+        Rayfield:Notify("Erreur", "Aucune boisson", 4483362458)
+    end
 end})
 
--- Auto Hungry/Thirsty
+-- Auto Hungry / Thirsty
 local AilmentsClient
 for _, v in ipairs(game:GetDescendants()) do
     if v:IsA("ModuleScript") and v.Name == "AilmentsClient" then
-        AilmentsClient = require(v) break
+        AilmentsClient = require(v)
+        break
     end
 end
 
@@ -199,5 +191,5 @@ if AilmentsClient then
     end)
 end
 
-Rayfield:Notify("Panel Chargé", "v51.6 - Auto Shower corrigé", 4483362458)
-print("v51.6 chargé avec succès")
+Rayfield:Notify("Panel Chargé", "v51.8 - Stable", 4483362458)
+print("v51.8 chargé avec succès")
