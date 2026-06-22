@@ -1,5 +1,5 @@
--- AUTO QUEST ŒUF v50 - Rayfield UI + Speed Hack
-print("=== AUTO QUEST ŒUF v50 - Rayfield UI + Speed Hack ===")
+-- AUTO QUEST ŒUF v51 - Rayfield UI + Speed Hack + TPs
+print("=== AUTO QUEST ŒUF v51 - Rayfield UI ===")
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -48,10 +48,9 @@ end
 local speedValue = 100
 local speedConnection = nil
 
-local SpeedToggle = Tab:CreateToggle({
+Tab:CreateToggle({
     Name = "Speed Hack",
     CurrentValue = false,
-    Flag = "SpeedHack",
     Callback = function(Value)
         if Value then
             if player.Character and player.Character:FindFirstChild("Humanoid") then
@@ -64,10 +63,7 @@ local SpeedToggle = Tab:CreateToggle({
             end)
             Rayfield:Notify("Speed Hack", "Activé ("..speedValue..")", 4483362458)
         else
-            if speedConnection then
-                speedConnection:Disconnect()
-                speedConnection = nil
-            end
+            if speedConnection then speedConnection:Disconnect() end
             if player.Character and player.Character:FindFirstChild("Humanoid") then
                 player.Character.Humanoid.WalkSpeed = 16
             end
@@ -80,21 +76,57 @@ Tab:CreateInput({
     Name = "Vitesse (WalkSpeed)",
     PlaceholderText = "Ex: 100",
     CurrentValue = "100",
-    Flag = "SpeedValue",
     Callback = function(Text)
         local num = tonumber(Text)
         if num then
             speedValue = num
-            Rayfield:Notify("Vitesse mise à jour", "Nouvelle vitesse : " .. num, 4483362458)
-            -- Si le speed hack est activé, on applique immédiatement
-            if SpeedToggle.CurrentValue and player.Character and player.Character:FindFirstChild("Humanoid") then
-                player.Character.Humanoid.WalkSpeed = speedValue
-            end
+            Rayfield:Notify("Vitesse", "Mise à jour : " .. num, 4483362458)
         end
     end,
 })
 
--- === Boutons Nourriture ===
+-- === TPs ===
+Tab:CreateButton({
+    Name = "TP Buy Water",
+    Callback = function()
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(3020.41, 6960.26, -3002.70)
+            Rayfield:Notify("TP", "Buy Water", 4483362458)
+        end
+    end,
+})
+
+Tab:CreateButton({
+    Name = "TP Buy Food",
+    Callback = function()
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(3020.41, 6960.26, -3042.36)
+            Rayfield:Notify("TP", "Buy Food", 4483362458)
+        end
+    end,
+})
+
+Tab:CreateButton({
+    Name = "TP Camping",
+    Callback = function()
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(-18.79, 31.93, -1053.97)
+            Rayfield:Notify("TP", "Camping", 4483362458)
+        end
+    end,
+})
+
+Tab:CreateButton({
+    Name = "TP Aire de Jeu",
+    Callback = function()
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(-353.36, 30.89, -1759.09)
+            Rayfield:Notify("TP", "Aire de Jeu", 4483362458)
+        end
+    end,
+})
+
+-- === Nourriture ===
 Tab:CreateButton({
     Name = "Équiper Sandwich (Hungry)",
     Callback = function()
@@ -127,27 +159,7 @@ Tab:CreateButton({
     end,
 })
 
-Tab:CreateButton({
-    Name = "TP Buy Water",
-    Callback = function()
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            player.Character.HumanoidRootPart.CFrame = CFrame.new(3020.41, 6960.26, -3002.70)
-            Rayfield:Notify("Téléportation", "TP Buy Water effectué", 4483362458)
-        end
-    end,
-})
-
-Tab:CreateButton({
-    Name = "TP Buy Food",
-    Callback = function()
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            player.Character.HumanoidRootPart.CFrame = CFrame.new(3020.41, 6960.26, -3042.36)
-            Rayfield:Notify("Téléportation", "TP Buy Food effectué", 4483362458)
-        end
-    end,
-})
-
--- Détection Auto
+-- Détection Auto Hungry / Thirsty
 local AilmentsClient
 for _, v in ipairs(game:GetDescendants()) do
     if v:IsA("ModuleScript") and v.Name == "AilmentsClient" then
@@ -182,5 +194,5 @@ if AilmentsClient then
     end)
 end
 
-Rayfield:Notify("Panel Chargé", "v50 + Speed Hack prêt !", 4483362458)
-print("v50 chargé avec succès")
+Rayfield:Notify("Panel Chargé", "v51 prêt !", 4483362458)
+print("v51 chargé avec succès")
