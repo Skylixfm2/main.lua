@@ -1,4 +1,4 @@
-print("=== AUTO QUEST ŒUF v51.5 - Rayfield UI + Auto Shower (Ta Maison) ===")
+print("=== AUTO QUEST ŒUF v51.6 - Rayfield UI + Auto Shower Fix ===")
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -11,7 +11,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
     Name = "Cheat Adopt Me | by SkylixFM",
     LoadingTitle = "Auto Quest Œuf",
-    LoadingSubtitle = "v51.5 - by SkylixFM",
+    LoadingSubtitle = "v51.6 - by SkylixFM",
     ConfigurationSaving = { Enabled = true, FolderName = "AutoQuestOeuf", FileName = "Config" },
     KeySystem = false
 })
@@ -74,16 +74,20 @@ Tab:CreateToggle({
     end,
 })
 
--- === AUTO SHOWER PET (TA DOUCHE PERSONNELLE) ===
+-- === AUTO SHOWER PET (Version Stable) ===
 Tab:CreateButton({
     Name = "🛁 Auto Shower Pet (Ta Maison)",
     Callback = function()
-        local EquippedPets = nil
-        pcall(function()
-            EquippedPets = require(ReplicatedStorage:WaitForChild("Fsys")).load("EquippedPets")
+        local success, EquippedPets = pcall(function()
+            return require(ReplicatedStorage:WaitForChild("Fsys")).load("EquippedPets")
         end)
+        
+        if not success or not EquippedPets then
+            Rayfield:Notify("Erreur", "Impossible de charger les pets", 4483362458)
+            return
+        end
 
-        local pet = EquippedPets and EquippedPets.choose_wrapper()
+        local pet = EquippedPets.choose_wrapper()
         if not pet or not pet.char then
             Rayfield:Notify("Erreur", "Équipe un pet d'abord !", 4483362458)
             return
@@ -91,59 +95,62 @@ Tab:CreateButton({
 
         local petRoot = pet.char:FindFirstChild("HumanoidRootPart")
         if not petRoot then
-            Rayfield:Notify("Erreur", "Pet non chargé", 4483362458)
+            Rayfield:Notify("Erreur", "PetRoot introuvable", 4483362458)
             return
         end
 
-        -- Recherche de TA douche (dans ta maison)
-        local myShower = nil
-        local minDist = math.huge
+        -- Recherche de la douche dans TA maison uniquement
+        local myHouse = nil
+        local shower = nil
 
-        for _, obj in ipairs(Workspace:GetDescendants()) do
-            local nameLower = obj.Name:lower()
-            if (nameLower:find("shower") or nameLower:find("modernshower")) and 
-               (obj:FindFirstChild("Center") or obj:FindFirstChild("PrimaryPart") or obj:FindFirstChild("Smoke")) then
-                
-                -- On essaie de détecter si c'est dans ta maison
-                local isInMyHouse = false
-                local current = obj
-                for i = 1, 8 do
-                    if current and current:FindFirstChild("HouseOwner") or current.Name:find("House") then
-                        isInMyHouse = true
-                        break
-                    end
-                    current = current.Parent
+        -- Cherche l'intérieur de ta maison
+        for _, interior in ipairs(Workspace:WaitForChild("HouseInteriors", 3):GetChildren()) do
+            if interior:FindFirstChild("Plots") or interior.Name:find("housing") then
+                myHouse = interior
+                break
+            end
+        end
+
+        if myHouse then
+            for _, obj in ipairs(myHouse:GetDescendants()) do
+                local n = obj.Name:lower()
+                if (n:find("shower") or n:find("modernshower")) and 
+                   (obj:FindFirstChild("Center") or obj:FindFirstChild("PrimaryPart") or obj:FindFirstChild("Smoke")) then
+                    shower = obj
+                    break
                 end
+            end
+        end
 
-                local part = obj.PrimaryPart or obj.Center or obj:FindFirstChildWhichIsA("BasePart")
-                if part then
-                    local dist = (part.Position - player.Character.HumanoidRootPart.Position).Magnitude
-                    if dist < minDist and dist < 300 then
-                        minDist = dist
-                        myShower = obj
+        -- Backup : recherche générale
+        if not shower then
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                local n = obj.Name:lower()
+                if (n:find("shower") or n:find("modernshower")) and obj.Parent and obj.Parent.Name:find("House") then
+                    if obj:FindFirstChild("Center") or obj:FindFirstChild("PrimaryPart") then
+                        shower = obj
+                        break
                     end
                 end
             end
         end
 
-        if not myShower then
+        if not shower then
             Rayfield:Notify("Erreur", "Ta douche n'a pas été trouvée", 4483362458)
             return
         end
 
-        local showerPart = myShower.PrimaryPart or myShower.Center or myShower:FindFirstChildWhichIsA("BasePart")
+        local showerPart = shower.PrimaryPart or shower.Center or shower:FindFirstChildWhichIsA("BasePart")
         if showerPart then
-            -- TP devant la douche (pas dedans)
-            petRoot.CFrame = showerPart.CFrame * CFrame.new(0, 3, -4)  -- -4 = devant la douche
+            petRoot.CFrame = showerPart.CFrame * CFrame.new(0, 3, -3.5) -- Devant la douche
             Rayfield:Notify("Auto Shower", "Pet téléporté devant ta douche !", 4483362458)
-            
-            task.wait(0.8)
+            task.wait(1)
             Rayfield:Notify("Auto Shower", "Le pet devrait se laver maintenant", 4483362458)
         end
     end,
 })
 
--- === TELEPORTS ===
+-- === TELEPORTS & FOOD (inchangés) ===
 local tps = {
     ["Buy Water"] = CFrame.new(3020.41, 6960.26, -3002.70),
     ["Buy Food"]  = CFrame.new(3020.41, 6960.26, -3042.36),
@@ -152,41 +159,23 @@ local tps = {
 }
 
 for name, cf in pairs(tps) do
-    Tab:CreateButton({
-        Name = "TP " .. name,
-        Callback = function()
-            local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-            if root then root.CFrame = cf end
-            Rayfield:Notify("TP", name, 4483362458)
-        end
-    })
+    Tab:CreateButton({Name = "TP " .. name, Callback = function()
+        local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if root then root.CFrame = cf end
+        Rayfield:Notify("TP", name, 4483362458)
+    end})
 end
 
--- === FOOD ===
 Tab:CreateButton({ Name = "Équiper Sandwich (Hungry)", Callback = function()
     local food = findItem("hungry")
-    if food then
-        pcall(function()
-            local ctm = require(ReplicatedStorage:FindFirstChild("ClientToolManager", true))
-            if ctm then ctm.backpack_equip(food) end
-        end)
-        Rayfield:Notify("Succès", "Sandwich équipé", 4483362458)
-    else
-        Rayfield:Notify("Erreur", "Aucun sandwich", 4483362458)
-    end
+    if food then pcall(function() local ctm = require(ReplicatedStorage:FindFirstChild("ClientToolManager", true)) if ctm then ctm.backpack_equip(food) end end) Rayfield:Notify("Succès", "Sandwich équipé", 4483362458)
+    else Rayfield:Notify("Erreur", "Aucun sandwich", 4483362458) end
 end})
 
 Tab:CreateButton({ Name = "Équiper Boisson (Thirsty)", Callback = function()
     local drink = findItem("thirsty")
-    if drink then
-        pcall(function()
-            local ctm = require(ReplicatedStorage:FindFirstChild("ClientToolManager", true))
-            if ctm then ctm.backpack_equip(drink) end
-        end)
-        Rayfield:Notify("Succès", "Boisson équipée", 4483362458)
-    else
-        Rayfield:Notify("Erreur", "Aucune boisson", 4483362458)
-    end
+    if drink then pcall(function() local ctm = require(ReplicatedStorage:FindFirstChild("ClientToolManager", true)) if ctm then ctm.backpack_equip(drink) end end) Rayfield:Notify("Succès", "Boisson équipée", 4483362458)
+    else Rayfield:Notify("Erreur", "Aucune boisson", 4483362458) end
 end})
 
 -- Auto Hungry/Thirsty
@@ -199,6 +188,7 @@ end
 
 if AilmentsClient then
     AilmentsClient.get_ailment_created_signal():Connect(function(ailment)
+        if not ailment then return end
         if ailment.id == "hungry" then
             local food = findItem("hungry")
             if food then pcall(function() local ctm = require(ReplicatedStorage:FindFirstChild("ClientToolManager", true)) if ctm then ctm.backpack_equip(food) end end) end
@@ -209,5 +199,5 @@ if AilmentsClient then
     end)
 end
 
-Rayfield:Notify("Panel Chargé", "v51.5 - Auto Shower ta maison", 4483362458)
-print("v51.5 chargé avec succès")
+Rayfield:Notify("Panel Chargé", "v51.6 - Auto Shower corrigé", 4483362458)
+print("v51.6 chargé avec succès")
