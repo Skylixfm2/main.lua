@@ -1,4 +1,4 @@
-print("=== AUTO QUEST ŒUF v51.9 - Rayfield UI + Auto Shower ===")
+print("=== AUTO QUEST ŒUF v52 - Rayfield UI + Auto Shower Fix ===")
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -11,7 +11,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
     Name = "Cheat Adopt Me | by SkylixFM",
     LoadingTitle = "Auto Quest Œuf",
-    LoadingSubtitle = "v51.9 - by SkylixFM",
+    LoadingSubtitle = "v52 - by SkylixFM",
     ConfigurationSaving = { Enabled = true, FolderName = "AutoQuestOeuf", FileName = "Config" },
     KeySystem = false
 })
@@ -62,7 +62,7 @@ Tab:CreateToggle({
                     char.Humanoid.WalkSpeed = speedValue
                 end
             end)
-            Rayfield:Notify("Speed Hack", "Activé", 4483362458)
+            Rayfield:Notify("Speed Hack", "Activé ("..speedValue..")", 4483362458)
         else
             if speedConnection then speedConnection:Disconnect() end
             local char = player.Character
@@ -74,7 +74,7 @@ Tab:CreateToggle({
     end,
 })
 
--- === AUTO SHOWER PET (Version Finale) ===
+-- === AUTO SHOWER PET (Version très légère) ===
 Tab:CreateButton({
     Name = "🛁 Auto Shower Pet (Ta Maison)",
     Callback = function()
@@ -91,18 +91,18 @@ Tab:CreateButton({
 
         local petRoot = pet.char:FindFirstChild("HumanoidRootPart")
         if not petRoot then
-            Rayfield:Notify("Erreur", "PetRoot introuvable", 4483362458)
+            Rayfield:Notify("Erreur", "Pet non chargé", 4483362458)
             return
         end
 
-        -- Trouver la douche dans ta maison
+        -- Recherche ultra légère de la douche
         local shower = nil
         local houseInteriors = Workspace:FindFirstChild("HouseInteriors")
         if houseInteriors then
             for _, house in ipairs(houseInteriors:GetChildren()) do
                 for _, obj in ipairs(house:GetDescendants()) do
-                    local n = obj.Name:lower()
-                    if (n:find("modernshower") or n:find("shower") or n:find("stylishshower")) and 
+                    local name = obj.Name:lower()
+                    if (name:find("modernshower") or name:find("shower")) and 
                        (obj:FindFirstChild("Center") or obj:FindFirstChild("PrimaryPart")) then
                         shower = obj
                         break
@@ -119,29 +119,16 @@ Tab:CreateButton({
 
         local showerPart = shower.PrimaryPart or shower.Center
         if showerPart then
-            -- TP devant la douche
-            petRoot.CFrame = showerPart.CFrame * CFrame.new(0, 3, -3.5)
-            Rayfield:Notify("Auto Shower", "Pet téléporté devant la douche", 4483362458)
-
-            task.wait(0.8)
-
-            -- Tentative de forcer l'utilisation
-            pcall(function()
-                local Interactions = ReplicatedStorage:FindFirstChild("InteractionsEngine", true)
-                if Interactions then
-                    local engine = require(Interactions)
-                    -- On essaie de déclencher l'interaction
-                    Rayfield:Notify("Auto Shower", "Tentative d'entrée dans la douche...", 4483362458)
-                end
-            end)
-
-            task.wait(1.2)
-            Rayfield:Notify("Auto Shower", "Le pet devrait être en train de se laver", 4483362458)
+            petRoot.CFrame = showerPart.CFrame * CFrame.new(0, 3, -4)
+            Rayfield:Notify("Auto Shower", "Pet téléporté devant ta douche", 4483362458)
+            
+            task.wait(0.7)
+            Rayfield:Notify("Auto Shower", "Le pet devrait rentrer dans la douche...", 4483362458)
         end
     end,
 })
 
--- === TELEPORTS & FOOD (identiques) ===
+-- === TELEPORTS & FOOD ===
 local tps = {
     ["Buy Water"] = CFrame.new(3020.41, 6960.26, -3002.70),
     ["Buy Food"]  = CFrame.new(3020.41, 6960.26, -3042.36),
@@ -183,7 +170,7 @@ Tab:CreateButton({ Name = "Équiper Boisson (Thirsty)", Callback = function()
     end
 end})
 
--- Auto Hungry/Thirsty
+-- Auto Hungry / Thirsty
 local AilmentsClient
 for _, v in ipairs(game:GetDescendants()) do
     if v:IsA("ModuleScript") and v.Name == "AilmentsClient" then
@@ -204,5 +191,5 @@ if AilmentsClient then
     end)
 end
 
-Rayfield:Notify("Panel Chargé", "v51.9 - Prêt", 4483362458)
-print("v51.9 chargé avec succès")
+Rayfield:Notify("Panel Chargé", "v52 - Version Légère", 4483362458)
+print("v52 chargé avec succès")
