@@ -8,9 +8,9 @@ local player = Players.LocalPlayer
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = "Auto Quest Œuf | by Starfall",
+    Name = "Cheat quete Adopte me | by SkylixFM",
     LoadingTitle = "Connecting to GitHub...",
-    LoadingSubtitle = "by Starfall",
+    LoadingSubtitle = "by SkylixFM",
     ConfigurationSaving = { Enabled = true, FolderName = "AutoQuestOeuf", FileName = "Config" },
     KeySystem = false
 })
@@ -46,7 +46,7 @@ end
 
 -- Boutons principaux
 Tab:CreateButton({
-    Name = "Équiper Sandwich (Hungry)",
+    Name = "Equipe Sandwich (Hungry)",
     Callback = function()
         local food = findItem("hungry")
         if food then
@@ -62,7 +62,7 @@ Tab:CreateButton({
 })
 
 Tab:CreateButton({
-    Name = "Équiper Boisson (Thirsty)",
+    Name = "Equipe Boisson (Thirsty)",
     Callback = function()
         local drink = findItem("thirsty")
         if drink then
