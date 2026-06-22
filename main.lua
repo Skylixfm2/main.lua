@@ -1,5 +1,5 @@
--- AUTO QUEST ŒUF v47 - Rayfield UI
-print("=== AUTO QUEST ŒUF v47 - Rayfield UI ===")
+-- AUTO QUEST ŒUF v48 - Rayfield UI (Version Propre)
+print("=== AUTO QUEST ŒUF v48 - Rayfield UI ===")
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -44,7 +44,7 @@ local function findItem(ailmentType)
     return item
 end
 
--- Boutons
+-- Boutons principaux
 Tab:CreateButton({
     Name = "Équiper Sandwich (Hungry)",
     Callback = function()
@@ -74,43 +74,6 @@ Tab:CreateButton({
         else
             Rayfield:Notify("Erreur", "Aucune boisson trouvée", 4483362458)
         end
-    end,
-})
-
-Tab:CreateButton({
-    Name = "Force Feed (Manual)",
-    Callback = function()
-        Rayfield:Notify("Info", "Clique maintenant sur FEED", 4483362458)
-    end,
-})
-
-Tab:CreateButton({
-    Name = "Sortir de l'Eau (Amélioré)",
-    Callback = function()
-        pcall(function()
-            local char = player.Character
-            if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Humanoid") then
-                local root = char.HumanoidRootPart
-                local hum = char.Humanoid
-                
-                -- Boost puissant pour sortir de l'eau
-                root.Velocity = Vector3.new(0, 80, 0)
-                hum:ChangeState(Enum.HumanoidStateType.Jumping)
-                task.wait(0.2)
-                root.Velocity = Vector3.new(0, 60, 0)
-                hum:ChangeState(Enum.HumanoidStateType.Freefall)
-                task.wait(0.4)
-                hum:ChangeState(Enum.HumanoidStateType.Landed)
-            end
-
-            -- Pour le pet aussi
-            for _, obj in ipairs(game.Workspace:GetDescendants()) do
-                if obj:FindFirstChild("Humanoid") and (obj:FindFirstChild("PetUnique") or obj.Name == "Char") then
-                    obj.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                end
-            end
-        end)
-        Rayfield:Notify("Sortir de l'Eau", "Boost appliqué !", 4483362458)
     end,
 })
 
@@ -149,5 +112,5 @@ if AilmentsClient then
     end)
 end
 
-Rayfield:Notify("Panel Chargé", "Auto Quest Œuf v47 prêt !", 4483362458)
-print("v47 chargé")
+Rayfield:Notify("Panel Chargé", "Auto Quest Œuf v48 prêt !", 4483362458)
+print("v48 chargé avec succès")
